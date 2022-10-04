@@ -1,4 +1,4 @@
-﻿using TaskManagerAPI.Services;
+using TaskManagerAPI.Services;
 using TaskManagerAPI.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +8,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using TaskManagerAPI.IdentityAuth;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace TaskManagerAPI.Controllers
 {
@@ -16,8 +20,8 @@ namespace TaskManagerAPI.Controllers
     [Authorize]
     public class TodoController: ControllerBase
     {
+        
         private readonly TodoService _todoService;
-
         private readonly ITodoList<Todo> _Todo;
 
         public TodoController(ITodoList<Todo> Todo, TodoService TodoService)
@@ -33,16 +37,27 @@ namespace TaskManagerAPI.Controllers
         [HttpPost("CreateTask")]
         public async Task<Object> CreateTask([FromBody] Todo todo)
         {
-            try
-            {
-                await _todoService.CreateTask(todo);
-                return true;
-            }
-            catch (Exception)
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+
+            if (identity != null)
             {
 
-                return false;
+                await _todoService.CreateTask(todo);
+                return true;
+
             }
+            /* try
+             {
+                 await _todoService.CreateTask(todo);
+                 return true;
+             }
+             catch (Exception)
+             {
+
+                 return false;
+             }*/
+
+            return false;
         }
 
         //Delete task  
@@ -94,6 +109,8 @@ namespace TaskManagerAPI.Controllers
         [HttpGet("GetAllTasks")]
         public Object GetAllTasks()
         {
+           // var identity = HttpContext.User.Identity as ClaimsIdentity;
+
             var data = _todoService.GetAllTasks();
             var json = JsonConvert.SerializeObject(data, Formatting.Indented,
                 new JsonSerializerSettings()

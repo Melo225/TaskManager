@@ -34,7 +34,7 @@ namespace TaskManagerAPI.Controllers
 
         //Create Task
 
-        [HttpPost("CreateTask")]
+        [HttpPost]
         public async Task<Object> CreateTask([FromBody] Todo todo)
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
@@ -61,7 +61,7 @@ namespace TaskManagerAPI.Controllers
         }
 
         //Delete task  
-        [HttpDelete("DeleteTask")]
+        [HttpDelete("{id}")]
         public bool DeleteTask(int TaskId)
         {
             try
@@ -76,7 +76,7 @@ namespace TaskManagerAPI.Controllers
         }
 
         //Update Task  
-        [HttpPut("UpdateTask")]
+        [HttpPut("{id}")]
         public bool UpdateTask(Todo Object)
         {
             try
@@ -92,7 +92,7 @@ namespace TaskManagerAPI.Controllers
 
 
         //GET All Task by Id  
-        [HttpGet("GetAllTaskById")]
+        [HttpGet("{id}")]
         public Object GetAllTaskById(int TaskId)
         {
             var data = _todoService.GetTaskById(TaskId);
@@ -106,7 +106,7 @@ namespace TaskManagerAPI.Controllers
         }
 
         //GET All Task  
-        [HttpGet("GetAllTasks")]
+        [HttpGet]
         public Object GetAllTasks()
         {
            // var identity = HttpContext.User.Identity as ClaimsIdentity;
